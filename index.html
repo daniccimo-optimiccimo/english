@@ -1,1 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глобальный анализ модели туберкулеза</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: #2c3e50;
+        }
+        .reveal .math {
+            font-size: 0.9em;
+        }
+        .reveal section img {
+            border: none;
+            box-shadow: none;
+        }
+        .footer {
+            font-size: 0.5em;
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
 
+        <!-- Титульный слайд -->
+        <section>
+            <h2>Глобальный анализ динамической модели распространения туберкулеза<br>с общей функцией контактов</h2>
+            <p>Сэмюэл Бовонг, Жан Жюль Тева</p>
+            <p><small>Потсдамский институт исследований воздействия на климат</small></p>
+        </section>
+
+        <!-- Актуальность -->
+        <section>
+            <h3>Актуальность</h3>
+            <ul>
+                <li>Туберкулёз — одна из главных причин смерти от инфекционного агента</li>
+                <li>1/3 населения мира инфицирована <em>M. tuberculosis</em></li>
+                <li>2–3 млн смертей ежегодно</li>
+                <li>ВИЧ, МЛУ, бедность, скученность — ускорители</li>
+                <li>Математические модели помогают оценить контроль</li>
+            </ul>
+        </section>
+
+        <!-- Мотивация: функция контактов -->
+        <section>
+            <h3>Функция контактов</h3>
+            <p>Скорость адекватных контактов: \(\beta(N)\)</p>
+            <ul>
+                <li>\(\beta(N) = \beta\) — закон действующих масс</li>
+                <li>\(\beta(N) = \beta/N\) — стандартная заболеваемость</li>
+                <li>\(\beta(N) = \frac{bN}{1+bN+\sqrt{1+2bN}}\) — насыщение</li>
+            </ul>
+            <p>Условия: \(\beta(N)>0,\ \beta'(N)\le 0,\ (N\beta(N))'\ge 0\)</p>
+        </section>
+
+        <!-- Схема модели -->
+        <section>
+            <h3>Схема модели (SEI)</h3>
+            <p>\(S\) — восприимчивые, \(E\) — латентные, \(I\) — инфекционные</p>
+            <p>
+                \[
+                \begin{cases}
+                \dot S = \Lambda - \beta(N) S I - \mu S\\
+                \dot E = \beta(N)(1-p)SI + r_2 I - [\mu+k(1-r_1)]E\\
+                \dot I = \beta(N)p SI + k(1-r_1)E - (\mu+d+\delta+r_2)I
+                \end{cases}
+                \]
+            </p>
+            <p>\(\Lambda\) — приток, \(\mu\) — смертность, \(p\) — быстрая прогрессия,<br>
+            \(k\) — реактивация, \(r_1\) — химиопрофилактика, \(r_2\) — лечение</p>
+        </section>
+
+        <!-- Базовое репродуктивное число -->
+        <section>
+            <h3>Базовое репродуктивное число \(\mathcal{R}_0\)</h3>
+            <p>
+                \[
+                \mathcal{R}_0 = \frac{\beta(S_0)S_0[\mu p + k(1-r_1)]}{(\mu+d+\delta)[\mu+k(1-r_1)] + \mu r_2},\quad S_0=\frac{\Lambda}{\mu}
+                \]
+            </p>
+            <ul>
+                <li>\(\mathcal{R}_0 < 1\) — болезнь исчезает</li>
+                <li>\(\mathcal{R}_0 > 1\) — эндемия</li>
+            </ul>
+        </section>
+
+        <!-- Глобальная устойчивость DFE -->
+        <section>
+            <h3>Глобальная устойчивость DFE</h3>
+            <p>Теорема: если \(\mathcal{R}_0 \le 1\), свободное от болезни равновесие \(P_0\) глобально асимптотически устойчиво.</p>
+            <p>Функция Ляпунова:</p>
+            <p>\[
+            V(E,I) = k(1-r_1)E + [\mu+k(1-r_1)]I
+            \]</p>
+            <p>\[
+            \dot V \le [\dots](\mathcal{R}_0 - 1)I \le 0
+            \]</p>
+        </section>
+
+        <!-- Эндемическое равновесие -->
+        <section>
+            <h3>Эндемическое равновесие</h3>
+            <p>При \(\mathcal{R}_0 > 1\) существует единственное положительное равновесие \(P^* = (S^*,E^*,I^*)\)</p>
+            <p>Выражается через \(N^*\) из уравнения \(\Lambda - \mu N^* = (d+\delta)I^*\)</p>
+        </section>
+
+        <!-- Глобальная устойчивость эндемии -->
+        <section>
+            <h3>Глобальная устойчивость эндемии</h3>
+            <p>При \(\mathcal{R}_0 > 1\) и условиях</p>
+            <p>\[
+            \frac{S}{S^*} \le \frac{E}{E^*},\quad \frac{S}{S^*} \le \frac{I}{I^*}
+            \]</p>
+            <p>равновесие \(P^*\) глобально асимптотически устойчиво.</p>
+            <p>Функция Ляпунова: \(U = S - S^*\ln S + A(E - E^*\ln E) + B(I - I^*\ln I)\)</p>
+        </section>
+
+        <!-- Численные результаты -->
+        <section>
+            <h3>Численные симуляции (примеры)</h3>
+            <ul>
+                <li>Случай 1: \(\beta(N)=\beta\) (массовое действие)</li>
+                <li>Случай 2: \(\beta(N)=\beta/N\) (стандартная заболеваемость)</li>
+                <li>Случай 3: насыщающаяся функция контактов</li>
+            </ul>
+            <p>При \(\mathcal{R}_0 \le 1\) → сходимость к DFE</p>
+            <p>При \(\mathcal{R}_0 > 1\) → сходимость к эндемическому равновесию</p>
+        </section>
+
+        <!-- Заключение -->
+        <section>
+            <h3>Заключение</h3>
+            <ul>
+                <li>Построена SEI-модель туберкулёза с общей функцией контактов</li>
+                <li>Показано пороговое поведение через \(\mathcal{R}_0\)</li>
+                <li>Доказана глобальная устойчивость DFE и эндемии (при условиях)</li>
+                <li>Численные эксперименты подтверждают теорию</li>
+            </ul>
+        </section>
+
+        <!-- Благодарности -->
+        <section>
+            <h3>Благодарность</h3>
+            <p>Фонд Александра фон Гумбольдта<br>Потсдамский институт исследований воздействия на климат</p>
+        </section>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        transition: 'slide'
+    });
+</script>
+</body>
+</html>
