@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuberculosis Model - Global Analysis</title>
+    <title>Global Analysis of Tuberculosis Model</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.css">
@@ -20,13 +20,6 @@
         }
         .reveal ul, .reveal p {
             font-size: 0.85em;
-        }
-        .footer {
-            font-size: 0.4em;
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            color: gray;
         }
     </style>
 </head>
@@ -47,7 +40,7 @@
         <section>
             <h3>Motivation</h3>
             <ul>
-                <li>Tuberculosis (TB) is a leading cause of death from a single infectious agent</li>
+                <li>TB is a leading cause of death from a single infectious agent</li>
                 <li>One-third of the world's population is infected with <em>M. tuberculosis</em></li>
                 <li>2–3 million deaths annually</li>
                 <li>HIV, MDR-TB, poverty, and crowding accelerate transmission</li>
@@ -62,7 +55,7 @@
             <p>Assumptions: \(\beta(N)>0,\ \beta'(N)\le 0,\ (N\beta(N))'\ge 0\)</p>
         </section>
 
-        <!-- SLIDE 3: Model Diagram & Equations -->
+        <!-- SLIDE 3: Model Equations -->
         <section>
             <h3>SEI Model Structure</h3>
             <p>
@@ -93,8 +86,8 @@
             </p>
             <br>
             <ul>
-                <li>\(\mathcal{R}_0\) = average number of secondary infections from one infectious individual in a fully susceptible population</li>
-                <li>\(\mathcal{R}_0 < 1\) → Disease-free equilibrium (DFE) is locally asymptotically stable</li>
+                <li>\(\mathcal{R}_0\) = average number of secondary infections from one infectious individual</li>
+                <li>\(\mathcal{R}_0 < 1\) → Disease-free equilibrium (DFE) is LAS</li>
                 <li>\(\mathcal{R}_0 > 1\) → DFE unstable, endemic equilibrium appears</li>
             </ul>
         </section>
@@ -146,8 +139,8 @@
         <section>
             <h3>Numerical Simulations</h3>
             <ul>
-                <li><strong>Case 1:</strong> \(\beta(N)=\beta\) (mass action) → convergence to DFE or endemic equilibrium depending on \(\mathcal{R}_0\)</li>
-                <li><strong>Case 2:</strong> \(\beta(N)=\beta/N\) (standard incidence) → same threshold behavior</li>
+                <li><strong>Case 1:</strong> \(\beta(N)=\beta\) (mass action) → threshold behavior</li>
+                <li><strong>Case 2:</strong> \(\beta(N)=\beta/N\) (standard incidence) → same behavior</li>
                 <li><strong>Case 3:</strong> Saturating contact function → same qualitative behavior</li>
             </ul>
             <br>
