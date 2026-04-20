@@ -2,24 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Global Analysis of Tuberculosis Model</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.css">
     <style>
-        .reveal .slides section {
-            text-align: left;
+        /* Глобальные настройка — убираем скролл */
+        html, body {
+            overflow: hidden !important;
+            height: 100%;
         }
+        
+        .reveal {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .reveal .slides {
+            height: 100%;
+        }
+        
+        .reveal .slides section {
+            height: 100%;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: left;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        /* Уменьшаем все шрифты для компактности */
+        .reveal h1 { font-size: 1.8em; margin: 0 0 15px 0; }
+        .reveal h2 { font-size: 1.5em; margin: 0 0 12px 0; }
+        .reveal h3 { font-size: 1.3em; margin: 0 0 10px 0; }
+        .reveal p { font-size: 0.8em; margin: 8px 0; line-height: 1.3; }
+        .reveal ul { font-size: 0.75em; margin: 5px 0; }
+        .reveal li { margin: 4px 0; line-height: 1.3; }
+        .reveal .math { font-size: 0.85em; }
+        
+        /* Центровка заголовков */
         .reveal h1, .reveal h2, .reveal h3 {
             color: #2c3e50;
             text-align: center;
         }
-        .reveal .math {
-            font-size: 1.1em;
+        
+        /* Компактные списки */
+        .reveal ul, .reveal ol {
+            display: block;
+            width: 90%;
+            max-width: 900px;
         }
-        .reveal ul, .reveal p {
-            font-size: 0.85em;
+        
+        hr {
+            margin: 8px 0;
         }
     </style>
 </head>
@@ -38,21 +76,20 @@
 
         <!-- SLIDE 2: Motivation & Contact Function -->
         <section>
-            <h3>Motivation</h3>
+            <h3>Motivation &amp; Contact Function</h3>
             <ul>
                 <li>TB is a leading cause of death from a single infectious agent</li>
                 <li>One-third of the world's population is infected with <em>M. tuberculosis</em></li>
-                <li>2–3 million deaths annually</li>
-                <li>HIV, MDR-TB, poverty, and crowding accelerate transmission</li>
+                <li>2–3 million deaths annually; HIV, MDR-TB, poverty accelerate transmission</li>
             </ul>
             <hr>
-            <h3>Contact Function \(\beta(N)\)</h3>
+            <p><strong>Contact function \(\beta(N)\):</strong></p>
             <ul>
                 <li>Mass action: \(\beta(N) = \beta\)</li>
                 <li>Standard incidence: \(\beta(N) = \beta/N\)</li>
                 <li>Saturating: \(\displaystyle \beta(N) = \frac{bN}{1+bN+\sqrt{1+2bN}}\)</li>
+                <li>Assumptions: \(\beta(N)>0,\ \beta'(N)\le 0,\ (N\beta(N))'\ge 0\)</li>
             </ul>
-            <p>Assumptions: \(\beta(N)>0,\ \beta'(N)\le 0,\ (N\beta(N))'\ge 0\)</p>
         </section>
 
         <!-- SLIDE 3: Model Equations -->
@@ -61,18 +98,17 @@
             <p>
                 \[
                 \begin{cases}
-                \dot S = \Lambda - \beta(N) S I - \mu S,\\[6pt]
-                \dot E = \beta(N)(1-p)SI + r_2 I - [\mu+k(1-r_1)]E,\\[6pt]
+                \dot S = \Lambda - \beta(N) S I - \mu S,\\[4pt]
+                \dot E = \beta(N)(1-p)SI + r_2 I - [\mu+k(1-r_1)]E,\\[4pt]
                 \dot I = \beta(N)p SI + k(1-r_1)E - (\mu+d+\delta+r_2)I
                 \end{cases}
                 \]
             </p>
             <ul>
                 <li>\(S\) – Susceptible, \(E\) – Exposed (latent), \(I\) – Infectious</li>
-                <li>\(\Lambda\) – recruitment rate, \(\mu\) – natural death rate</li>
-                <li>\(p\) – fast progression, \(k\) – reactivation rate</li>
-                <li>\(r_1\) – chemoprophylaxis, \(r_2\) – treatment rate</li>
-                <li>\(d\) – disease-induced death, \(\delta\) – emigration rate</li>
+                <li>\(\Lambda\) – recruitment, \(\mu\) – natural death, \(p\) – fast progression</li>
+                <li>\(k\) – reactivation, \(r_1\) – chemoprophylaxis, \(r_2\) – treatment</li>
+                <li>\(d\) – disease-induced death, \(\delta\) – emigration</li>
             </ul>
         </section>
 
@@ -86,7 +122,7 @@
             </p>
             <br>
             <ul>
-                <li>\(\mathcal{R}_0\) = average number of secondary infections from one infectious individual</li>
+                <li>\(\mathcal{R}_0\) = average number of secondary infections</li>
                 <li>\(\mathcal{R}_0 < 1\) → Disease-free equilibrium (DFE) is LAS</li>
                 <li>\(\mathcal{R}_0 > 1\) → DFE unstable, endemic equilibrium appears</li>
             </ul>
@@ -94,65 +130,37 @@
 
         <!-- SLIDE 5: Global Stability of DFE -->
         <section>
-            <h3>Global Stability of Disease-Free Equilibrium</h3>
+            <h3>Global Stability of DFE</h3>
             <p><strong>Theorem:</strong> If \(\mathcal{R}_0 \le 1\), the DFE \(P_0 = (S_0,0,0)\) is globally asymptotically stable.</p>
             <br>
-            <p><strong>Lyapunov function:</strong></p>
-            <p>
-                \[
-                V(E,I) = k(1-r_1)E + \bigl[\mu + k(1-r_1)\bigr]I
-                \]
-            </p>
-            <p>Its time derivative satisfies:</p>
-            <p>
-                \[
-                \dot V \le \bigl[r_2\mu + (\mu+k(1-r_1))(\mu+d+\delta)\bigr](\mathcal{R}_0 - 1)I \le 0
-                \]
-            </p>
+            <p><strong>Lyapunov function:</strong> \(V(E,I) = k(1-r_1)E + [\mu + k(1-r_1)]I\)</p>
+            <p>Time derivative: \(\dot V \le [r_2\mu + (\mu+k(1-r_1))(\mu+d+\delta)](\mathcal{R}_0 - 1)I \le 0\)</p>
+            <br>
             <p>By LaSalle's invariance principle, all trajectories converge to \(P_0\).</p>
         </section>
 
-        <!-- SLIDE 6: Endemic Equilibrium & Its Stability -->
+        <!-- SLIDE 6: Endemic Equilibrium & Stability -->
         <section>
             <h3>Endemic Equilibrium</h3>
             <p>When \(\mathcal{R}_0 > 1\), there exists a unique positive endemic equilibrium \(P^* = (S^*,E^*,I^*)\).</p>
             <br>
-            <h3>Global Stability of \(P^*\)</h3>
-            <p>Under the conditions:</p>
-            <p>
-                \[
-                \frac{S}{S^*} \le \frac{E}{E^*},\qquad \frac{S}{S^*} \le \frac{I}{I^*}
-                \]
-            </p>
-            <p>the endemic equilibrium is globally asymptotically stable.</p>
+            <p><strong>Global stability under conditions:</strong> \(\displaystyle \frac{S}{S^*} \le \frac{E}{E^*},\; \frac{S}{S^*} \le \frac{I}{I^*}\)</p>
             <br>
-            <p><strong>Lyapunov function:</strong></p>
-            <p>
-                \[
-                U = S - S^*\ln S + A(E - E^*\ln E) + B(I - I^*\ln I)
-                \]
-            </p>
-            <p>with appropriately chosen constants \(A, B > 0\).</p>
+            <p><strong>Lyapunov function:</strong> \(U = S - S^*\ln S + A(E - E^*\ln E) + B(I - I^*\ln I)\) with \(A,B>0\).</p>
         </section>
 
         <!-- SLIDE 7: Numerical Simulations & Conclusion -->
         <section>
-            <h3>Numerical Simulations</h3>
+            <h3>Numerical Results &amp; Conclusion</h3>
             <ul>
                 <li><strong>Case 1:</strong> \(\beta(N)=\beta\) (mass action) → threshold behavior</li>
                 <li><strong>Case 2:</strong> \(\beta(N)=\beta/N\) (standard incidence) → same behavior</li>
                 <li><strong>Case 3:</strong> Saturating contact function → same qualitative behavior</li>
             </ul>
             <br>
-            <h3>Conclusion</h3>
-            <ul>
-                <li>A TB model with a general contact function was analyzed</li>
-                <li>Threshold dynamics determined by \(\mathcal{R}_0\)</li>
-                <li>Global stability proven using Lyapunov functions</li>
-                <li>Numerical simulations confirm theoretical results</li>
-            </ul>
+            <p><strong>Conclusion:</strong> Threshold dynamics determined by \(\mathcal{R}_0\); global stability proven via Lyapunov functions; numerical simulations confirm theory.</p>
             <br>
-            <p><strong>Acknowledgment:</strong> Alexander von Humboldt Foundation</p>
+            <p><small><strong>Acknowledgment:</strong> Alexander von Humboldt Foundation</small></p>
         </section>
 
     </div>
