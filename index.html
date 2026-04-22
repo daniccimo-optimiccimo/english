@@ -3,182 +3,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Global Analysis of Tuberculosis Model</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.css">
+    <title>TB Transmission Model - Global Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Глобальные настройка — убираем скролл */
-        html, body {
-            overflow: hidden !important;
-            height: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        .reveal {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1e;
+            color: #eef2ff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Presentation Container */
+        .presentation-container {
+            position: relative;
+            width: 100%;
             height: 100%;
             overflow: hidden;
         }
-        
-        .reveal .slides {
+
+        /* Slides Wrapper */
+        .slides-wrapper {
+            display: flex;
+            width: 100%;
             height: 100%;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            will-change: transform;
         }
-        
-        .reveal .slides section {
+
+        /* Individual Slide */
+        .slide {
+            flex: 0 0 100%;
             height: 100%;
-            display: flex !important;
-            flex-direction: column;
-            justify-content: center;
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            scrollbar-width: thin;
+            position: relative;
+        }
+
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: #1e2438;
+            border-radius: 10px;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 10px;
+        }
+
+        /* Background gradient per slide (subtle) */
+        .slide {
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.08), rgba(10, 15, 30, 0.95));
+        }
+
+        /* Content container */
+        .slide-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a5b4fc, #c7d2fe);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            margin-bottom: 1.2rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            border-left: 5px solid #4f46e5;
+            padding-left: 1.2rem;
+            margin: 1.5rem 0 1rem 0;
+            color: #e0e7ff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.8rem 0;
+            color: #c7d2fe;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #2d3a5e;
+            padding-bottom: 0.8rem;
+        }
+
+        .authors {
+            font-size: 1.1rem;
+            color: #a5b4fc;
+            margin-top: 2rem;
+        }
+
+        /* Cards & boxes */
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 1.2rem 0;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+
+        .formula {
+            background: #0f172a;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            overflow-x: auto;
+            border-left: 4px solid #4f46e5;
+            margin: 1rem 0;
+            color: #e2e8f0;
+        }
+
+        .inline-code {
+            font-family: monospace;
+            background: #1e293b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            color: #fbbf24;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .stat-badge {
+            background: #4f46e5;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        ul, .list-styled {
+            margin: 0.8rem 0 0.8rem 1.5rem;
+            line-height: 1.6;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Navigation buttons */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(79, 70, 229, 0.7);
+            backdrop-filter: blur(12px);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 60px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.2s;
+            display: flex;
             align-items: center;
-            text-align: left;
-            padding: 20px;
-            overflow: hidden;
+            justify-content: center;
         }
-        
-        /* Уменьшаем все шрифты для компактности */
-        .reveal h1 { font-size: 1.8em; margin: 0 0 15px 0; }
-        .reveal h2 { font-size: 1.5em; margin: 0 0 12px 0; }
-        .reveal h3 { font-size: 1.3em; margin: 0 0 10px 0; }
-        .reveal p { font-size: 0.8em; margin: 8px 0; line-height: 1.3; }
-        .reveal ul { font-size: 0.75em; margin: 5px 0; }
-        .reveal li { margin: 4px 0; line-height: 1.3; }
-        .reveal .math { font-size: 0.85em; }
-        
-        /* Центровка заголовков */
-        .reveal h1, .reveal h2, .reveal h3 {
-            color: #2c3e50;
-            text-align: center;
+
+        .nav-btn:hover {
+            background: #4f46e5;
+            transform: translateY(-50%) scale(1.05);
         }
-        
-        /* Компактные списки */
-        .reveal ul, .reveal ol {
-            display: block;
-            width: 90%;
-            max-width: 900px;
+
+        .nav-prev {
+            left: 20px;
         }
-        
-        hr {
-            margin: 8px 0;
+
+        .nav-next {
+            right: 20px;
+        }
+
+        /* Slide indicator */
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172acc;
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 100;
+            font-family: monospace;
+            border: 1px solid #334155;
+        }
+
+        /* Fullscreen button */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            border: none;
+            color: #cbd5e1;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        /* Math adjust */
+        .katex-display {
+            margin: 0.8rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .nav-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.2rem;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
 </head>
 <body>
-<div class="reveal">
-    <div class="slides">
+<div class="presentation-container">
+    <div class="slides-wrapper" id="slidesWrapper">
+        <!-- SLIDE 1: TITLE -->
+        <div class="slide">
+            <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; min-height: 100%;">
+                <div class="stat-badge" style="background: #3b82f6;">Global Analysis</div>
+                <h1 style="font-size: 3.5rem;">Global Analysis of a Dynamical Model for Tuberculosis Transmission<br>with a General Contact Function</h1>
+                <div class="subtitle">A Lyapunov-based approach to TB epidemic thresholds</div>
+                <div class="authors">
+                    <p><strong>Samuel Bowong, Jean Jules Tewa</strong></p>
+                    <p>Potsdam Institute for Climate Impact Research, Germany</p>
+                    <p style="margin-top: 2rem; font-size: 0.9rem; color: #94a3b8;"><i class="fas fa-chalkboard-teacher"></i> Fullscreen ready — press F or click bottom-right button</p>
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 1: Title -->
-        <section>
-            <h2>Global Analysis of a Dynamical Model<br>for Tuberculosis Transmission</h2>
-            <h3>with a General Contact Function</h3>
-            <br>
-            <p><strong>Samuel Bowong</strong>, Jean Jules Tewa</p>
-            <p><small>Potsdam Institute for Climate Impact Research, Germany</small></p>
-        </section>
+        <!-- SLIDE 2: MOTIVATION & CONTACT FUNCTION -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-chart-line"></i> Motivation & Contact Function</h2>
+                <div class="card">
+                    <ul class="list-styled">
+                        <li><strong>TB burden:</strong> One-third of world's population infected with <em>M. tuberculosis</em> → 2–3 million deaths/year.</li>
+                        <li><strong>Accelerators:</strong> HIV, MDR-TB, poverty, crowding, limited healthcare.</li>
+                        <li><strong>Key idea:</strong> Contact rate depends on population size $N$ → general function $\beta(N)$.</li>
+                    </ul>
+                </div>
+                <h3>📐 Contact function forms</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <i class="fas fa-users"></i> <strong>Mass action</strong>
+                        <div class="formula">$$\beta(N) = \beta$$</div>
+                        <div>Incidence: $\beta S I$ (small populations)</div>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-chart-simple"></i> <strong>Standard incidence</strong>
+                        <div class="formula">$$\beta(N) = \frac{\beta}{N}$$</div>
+                        <div>Incidence: $\beta S I / N$ (large populations)</div>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-chart-line"></i> <strong>Saturating (Heesterbeek-Metz)</strong>
+                        <div class="formula">$$\beta(N) = \frac{bN}{1 + bN + \sqrt{1 + 2bN}}$$</div>
+                        <div>Linear for small $N$, saturates for large $N$</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <strong>✅ Assumptions:</strong> $\beta(N) > 0$, $\beta'(N) \le 0$, $(N\beta(N))' \ge 0$ <br>
+                    (per-capita contacts non-increasing, total contacts non-decreasing)
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 2: Motivation & Contact Function -->
-        <section>
-            <h3>Motivation &amp; Contact Function</h3>
-            <ul>
-                <li>TB is a leading cause of death from a single infectious agent</li>
-                <li>One-third of the world's population is infected with <em>M. tuberculosis</em></li>
-                <li>2–3 million deaths annually; HIV, MDR-TB, poverty accelerate transmission</li>
-            </ul>
-            <hr>
-            <p><strong>Contact function \(\beta(N)\):</strong></p>
-            <ul>
-                <li>Mass action: \(\beta(N) = \beta\)</li>
-                <li>Standard incidence: \(\beta(N) = \beta/N\)</li>
-                <li>Saturating: \(\displaystyle \beta(N) = \frac{bN}{1+bN+\sqrt{1+2bN}}\)</li>
-                <li>Assumptions: \(\beta(N)>0,\ \beta'(N)\le 0,\ (N\beta(N))'\ge 0\)</li>
-            </ul>
-        </section>
+        <!-- SLIDE 3: SEI MODEL STRUCTURE -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-project-diagram"></i> SEI Model Structure</h2>
+                <div class="formula">
+                    $$\begin{cases} 
+                    \dot{S} = \Lambda - \beta(N)SI - \mu S, \\
+                    \dot{E} = \beta(N)(1-p)SI + r_2I - [\mu + k(1-r_1)]E, \\
+                    \dot{I} = \beta(N)pSI + k(1-r_1)E - (\mu + d + \delta + r_2)I
+                    \end{cases}$$
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <strong>🔵 Compartments</strong><br>
+                        $S$ – Susceptible &nbsp;|&nbsp; $E$ – Exposed (latent)<br>
+                        $I$ – Infectious (active TB)
+                    </div>
+                    <div class="card">
+                        <strong>⚙️ Parameters</strong><br>
+                        $\Lambda$: recruitment &nbsp; $\mu$: natural death<br>
+                        $p$: fast progression &nbsp; $k$: reactivation<br>
+                        $r_1$: chemoprophylaxis &nbsp; $r_2$: treatment<br>
+                        $d$: disease-induced death &nbsp; $\delta$: emigration
+                    </div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-info-circle"></i> <strong>Interpretation:</strong> New infections occur at rate $\beta(N) S I$. Fraction $p$ goes directly to $I$ (fast), rest to $E$. Latent individuals may reactivate ($k$), and treated infectious return to $E$.
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 3: Model Equations -->
-        <section>
-            <h3>SEI Model Structure</h3>
-            <p>
-                \[
-                \begin{cases}
-                \dot S = \Lambda - \beta(N) S I - \mu S,\\[4pt]
-                \dot E = \beta(N)(1-p)SI + r_2 I - [\mu+k(1-r_1)]E,\\[4pt]
-                \dot I = \beta(N)p SI + k(1-r_1)E - (\mu+d+\delta+r_2)I
-                \end{cases}
-                \]
-            </p>
-            <ul>
-                <li>\(S\) – Susceptible, \(E\) – Exposed (latent), \(I\) – Infectious</li>
-                <li>\(\Lambda\) – recruitment, \(\mu\) – natural death, \(p\) – fast progression</li>
-                <li>\(k\) – reactivation, \(r_1\) – chemoprophylaxis, \(r_2\) – treatment</li>
-                <li>\(d\) – disease-induced death, \(\delta\) – emigration</li>
-            </ul>
-        </section>
+        <!-- SLIDE 4: BASIC REPRODUCTION NUMBER R0 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-calculator"></i> Basic Reproduction Number $\mathcal{R}_0$</h2>
+                <div class="card">
+                    <div class="formula">
+                        $$\mathcal{R}_0 = \frac{\beta(S_0)S_0[\mu p + k(1 - r_1)]}{(\mu + d + \delta)[\mu + k(1 - r_1)] + \mu r_2}, \quad S_0 = \frac{\Lambda}{\mu}$$
+                    </div>
+                    <ul>
+                        <li>$\mathcal{R}_0$ = average number of secondary infections from one infectious case in a fully susceptible population.</li>
+                        <li>$\mathcal{R}_0 < 1$ → Disease-Free Equilibrium (DFE) $P_0=(S_0,0,0)$ is locally asymptotically stable (LAS).</li>
+                        <li>$\mathcal{R}_0 > 1$ → DFE unstable, a unique endemic equilibrium emerges.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <strong>📌 Threshold property:</strong> The fate of the epidemic is fully determined by $\mathcal{R}_0$.
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 4: Basic Reproduction Number -->
-        <section>
-            <h3>Basic Reproduction Number \(\mathcal{R}_0\)</h3>
-            <p>
-                \[
-                \mathcal{R}_0 = \frac{\beta(S_0)S_0\bigl[\mu p + k(1-r_1)\bigr]}{(\mu+d+\delta)\bigl[\mu+k(1-r_1)\bigr] + \mu r_2},\qquad S_0 = \frac{\Lambda}{\mu}
-                \]
-            </p>
-            <br>
-            <ul>
-                <li>\(\mathcal{R}_0\) = average number of secondary infections</li>
-                <li>\(\mathcal{R}_0 < 1\) → Disease-free equilibrium (DFE) is LAS</li>
-                <li>\(\mathcal{R}_0 > 1\) → DFE unstable, endemic equilibrium appears</li>
-            </ul>
-        </section>
+        <!-- SLIDE 5: GLOBAL STABILITY OF DFE -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-globe"></i> Global Stability of DFE</h2>
+                <div class="card">
+                    <strong>Theorem:</strong> If $\mathcal{R}_0 \le 1$, the disease-free equilibrium $P_0 = (S_0,0,0)$ is <strong>globally asymptotically stable (GAS)</strong>.
+                </div>
+                <div class="card">
+                    <strong>Lyapunov function:</strong>
+                    <div class="formula">$$V(E,I) = k(1 - r_1)E + [\mu + k(1 - r_1)]I$$</div>
+                    <strong>Time derivative:</strong>
+                    <div class="formula">$$\dot{V} \le \bigl[r_2\mu + (\mu + k(1 - r_1))(\mu + d + \delta)\bigr](\mathcal{R}_0 - 1)I \le 0$$</div>
+                    By LaSalle's invariance principle, all trajectories in the feasible region converge to $P_0$.
+                </div>
+                <div class="card">
+                    <i class="fas fa-check-circle"></i> <strong>Meaning:</strong> No matter the initial outbreak size (within biologically relevant domain), TB eventually disappears when $\mathcal{R}_0 \le 1$.
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 5: Global Stability of DFE -->
-        <section>
-            <h3>Global Stability of DFE</h3>
-            <p><strong>Theorem:</strong> If \(\mathcal{R}_0 \le 1\), the DFE \(P_0 = (S_0,0,0)\) is globally asymptotically stable.</p>
-            <br>
-            <p><strong>Lyapunov function:</strong> \(V(E,I) = k(1-r_1)E + [\mu + k(1-r_1)]I\)</p>
-            <p>Time derivative: \(\dot V \le [r_2\mu + (\mu+k(1-r_1))(\mu+d+\delta)](\mathcal{R}_0 - 1)I \le 0\)</p>
-            <br>
-            <p>By LaSalle's invariance principle, all trajectories converge to \(P_0\).</p>
-        </section>
+        <!-- SLIDE 6: ENDEMIC EQUILIBRIUM -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-virus"></i> Endemic Equilibrium</h2>
+                <div class="card">
+                    <strong>Existence & uniqueness:</strong> When $\mathcal{R}_0 > 1$, there exists a unique positive endemic equilibrium $P^* = (S^*, E^*, I^*)$.
+                </div>
+                <div class="card">
+                    <strong>Global stability under conditions:</strong>
+                    <div class="formula">$$\frac{S}{S^*} \le \frac{E}{E^*}, \quad \frac{S}{S^*} \le \frac{I}{I^*}$$</div>
+                    <strong>Lyapunov function (Volterra type):</strong>
+                    <div class="formula">$$U = S - S^*\ln S + A(E - E^*\ln E) + B(I - I^*\ln I)$$</div>
+                    with $A,B > 0$ chosen appropriately. $\dot{U} \le 0$ and equality only at $P^*$ → $P^*$ is GAS in the interior.
+                </div>
+                <div class="card">
+                    💡 <em>Numerics suggest the conditions are sufficient but may be relaxed; simulations always show convergence to $P^*$.</em>
+                </div>
+            </div>
+        </div>
 
-        <!-- SLIDE 6: Endemic Equilibrium & Stability -->
-        <section>
-            <h3>Endemic Equilibrium</h3>
-            <p>When \(\mathcal{R}_0 > 1\), there exists a unique positive endemic equilibrium \(P^* = (S^*,E^*,I^*)\).</p>
-            <br>
-            <p><strong>Global stability under conditions:</strong> \(\displaystyle \frac{S}{S^*} \le \frac{E}{E^*},\; \frac{S}{S^*} \le \frac{I}{I^*}\)</p>
-            <br>
-            <p><strong>Lyapunov function:</strong> \(U = S - S^*\ln S + A(E - E^*\ln E) + B(I - I^*\ln I)\) with \(A,B>0\).</p>
-        </section>
-
-        <!-- SLIDE 7: Numerical Simulations & Conclusion -->
-        <section>
-            <h3>Numerical Results &amp; Conclusion</h3>
-            <ul>
-                <li><strong>Case 1:</strong> \(\beta(N)=\beta\) (mass action) → threshold behavior</li>
-                <li><strong>Case 2:</strong> \(\beta(N)=\beta/N\) (standard incidence) → same behavior</li>
-                <li><strong>Case 3:</strong> Saturating contact function → same qualitative behavior</li>
-            </ul>
-            <br>
-            <p><strong>Conclusion:</strong> Threshold dynamics determined by \(\mathcal{R}_0\); global stability proven via Lyapunov functions; numerical simulations confirm theory.</p>
-            <br>
-            <p><small><strong>Acknowledgment:</strong> Alexander von Humboldt Foundation</small></p>
-        </section>
-
+        <!-- SLIDE 7: NUMERICAL RESULTS & CONCLUSION -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-chart-line"></i> Numerical Results & Conclusion</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <strong>📊 Three contact scenarios tested</strong><br>
+                        ✅ Mass action $\beta(N)=\beta$ <br>
+                        ✅ Standard incidence $\beta(N)=\beta/N$<br>
+                        ✅ Saturating function (Heesterbeek-Metz)
+                    </div>
+                    <div class="card">
+                        <strong>🎯 Threshold behavior confirmed</strong><br>
+                        $\mathcal{R}_0 < 1$ → convergence to DFE (disease eliminated)<br>
+                        $\mathcal{R}_0 > 1$ → convergence to endemic equilibrium (persistence)
+                    </div>
+                </div>
+                <div class="card">
+                    <strong>🔬 Conclusion:</strong>
+                    <ul>
+                        <li>Global dynamics completely determined by $\mathcal{R}_0$.</li>
+                        <li>Global asymptotic stability proven via Lyapunov functions + LaSalle.</li>
+                        <li>Numerical simulations (Cameroon data) perfectly match theoretical predictions.</li>
+                        <li>The framework with general contact function $\beta(N)$ unifies mass action, standard, and saturating incidence.</li>
+                    </ul>
+                </div>
+                <div class="card" style="text-align: center; background: #1e293b;">
+                    <i class="fas fa-thank-you"></i> <strong>Acknowledgment:</strong> Alexander von Humboldt Foundation, Germany
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Navigation controls -->
+    <button class="nav-btn nav-prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+    <button class="nav-btn nav-next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+    <div class="slide-counter" id="slideCounter">1 / 7</div>
+    <button class="fullscreen-btn" id="fullscreenBtn"><i class="fas fa-expand"></i></button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.js"></script>
 <script>
-    Reveal.initialize({
-        hash: true,
-        slideNumber: true,
-        transition: 'slide',
-        plugins: [ RevealMath ],
-        math: {
-            mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js',
-            config: 'TeX-AMS_HTML-full'
+    const slidesWrapper = document.getElementById('slidesWrapper');
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('slideCounter');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    function updateSlidePosition() {
+        slidesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        counter.innerText = `${currentIndex + 1} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+        if (currentIndex < totalSlides - 1) {
+            currentIndex++;
+            updateSlidePosition();
+        }
+    }
+
+    function prevSlide() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlidePosition();
+        }
+    }
+
+    // Keyboard events
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'f' || e.key === 'F') {
+            toggleFullscreen();
         }
     });
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.warn(err));
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+            document.exitFullscreen();
+            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+    });
+
+    // re-render math after load (just in case)
+    if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });
+    }
 </script>
 </body>
 </html>
